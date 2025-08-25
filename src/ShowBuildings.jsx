@@ -18,6 +18,13 @@ const ShowBuildings = ({ onMarkersChange }) => {
         );
         const data = await response.json();
         console.log("Gebäude:", data);
+        
+        // Debug: Zeige verfügbare Attribute des ersten Gebäudes
+        if (data.length > 0) {
+          console.log("Verfügbare Attribute im ersten Gebäude:", Object.keys(data[0]));
+          console.log("Erstes Gebäude komplett:", data[0]);
+        }
+        
         setBuildings(data);
       } catch (err) {
         console.error("Fehler beim Abrufen der Gebäude:", err);
@@ -39,19 +46,28 @@ const ShowBuildings = ({ onMarkersChange }) => {
         const lon = building.address?.lon;
         
         // Baujahr extrahieren
-        const constructionYear = building.constructionYear || building.yearBuilt || building.year;
+        const constructionYear = building.constructionYear;
         
         // Energieeffizienzklasse extrahieren
-        const efficiencyClass = building.energyEfficiencyClass || building.EnergyEfficiencyClass || building.energyClass;
+        const efficiencyClass = building.energyEfficiencyClass;
+        
+        // PrimaryTypeOfBuilding extrahieren
+        const primaryType = building.primaryTypeOfBuilding || 'Sonstige';
         
         if (lat && lon && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lon))) {
           const buildingData = {
+            // Alle ursprünglichen API-Daten beibehalten
+            ...building,
+            // Spezifische Eigenschaften für die Karte überschreiben/hinzufügen
             name: building.name,
             lat: parseFloat(lat),
             lon: parseFloat(lon),
             address: `${building.address.streetName || ''} ${building.address.houseNumber || ''}, ${building.address.postalCode || ''}, ${building.address.city || ''}, ${building.address.country || ''}`.replace(/\s+/g, ' ').trim(),
             constructionYear: constructionYear ? parseInt(constructionYear) : null,
-            energyEfficiencyClass: efficiencyClass || null
+            energyEfficiencyClass: efficiencyClass || null,
+            primaryTypeOfBuilding: primaryType,
+            primaryHeatingType: building.primaryHeatingType || null,
+            parkingSpaces: building.parkingSpaces || null,
           };
           
           results.push(buildingData);

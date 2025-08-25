@@ -37,3 +37,17 @@
   }
 }
 
+/* Custom Marker Styles */
+.custom-marker {
+  border: none !important;
+  background: transparent !important;
+}
+
+.custom-marker div {
+  transition: transform 0.2s ease;
+}
+
+.custom-marker:hover div {
+  transform: scale(1.2);
+}
+
