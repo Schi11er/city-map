@@ -71,10 +71,51 @@ const BuildingInfoModal = ({
     }
   };
 
-  // Beim ersten Laden die Klasseneigenschaften laden
+  const fetchAccessRights = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings/access-rights/class?classUri=https://ibpdi.datacat.org/class/Building`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Fehler beim Abrufen der Zugriffsrechte:', error);
+      return [];
+    }
+  };
+
   useEffect(() => {
+    const fetchClassPropertiesWithRights = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const rightsData = await fetchAccessRights();
+        const rightsMap = rightsData.reduce((map, item) => {
+          map[item.Name] = item.Right === 2 ? 'read' : 'write';
+          return map;
+        }, {});
+
+        await fetchClassProperties();
+
+        setClassProperties((prevProperties) =>
+          prevProperties.map((property) => ({
+            ...property,
+            accessRight: rightsMap[property.name] || 'read',
+          }))
+        );
+      } catch (error) {
+        console.error('Fehler beim Abrufen der Klasseneigenschaften mit Rechten:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (isOpen) {
-      fetchClassProperties();
+      fetchClassPropertiesWithRights();
       setFormData({});
     }
   }, [isOpen]);
@@ -105,6 +146,12 @@ const BuildingInfoModal = ({
   if (!isOpen || !building) return null;
 
   const missingProperties = getMissingProperties(building);
+  const sortedMissingProperties = missingProperties.sort((a, b) => {
+    if (a.accessRight === b.accessRight) {
+      return a.name.localeCompare(b.name);
+    }
+    return a.accessRight === 'write' ? -1 : 1;
+  });
 
   return (
     <div style={{
@@ -193,7 +240,7 @@ const BuildingInfoModal = ({
             </p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {missingProperties.map((property, index) => (
+              {sortedMissingProperties.map((property, index) => (
                 <div key={index} style={{ display: 'flex', flexDirection: 'column' }}>
                   <label style={{
                     fontSize: '14px',
@@ -202,6 +249,15 @@ const BuildingInfoModal = ({
                     marginBottom: '4px'
                   }}>
                     {property.name}
+                    {property.accessRight !== 'write' && (
+                      <sup style={{
+                        color: 'red',
+                        fontSize: '10px',
+                        marginLeft: '4px'
+                      }}>
+                        read only
+                      </sup>
+                    )}
                     {property.description && (
                       <span style={{
                         fontSize: '12px',
@@ -222,8 +278,9 @@ const BuildingInfoModal = ({
                       padding: '8px',
                       border: '1px solid #d1d5db',
                       borderRadius: '4px',
-                      fontSize: '14px'
+                      fontSize: '14px',
                     }}
+                    disabled={property.accessRight !== 'write'}
                   />
                 </div>
               ))}

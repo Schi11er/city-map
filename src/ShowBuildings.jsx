@@ -14,7 +14,7 @@ const ShowBuildings = ({ onMarkersChange }) => {
     const fetchBuildings = async () => {
       try {
         const response = await fetch(
-          "http://localhost:1111/api/buildings"
+          `http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings`
         );
         const data = await response.json();
         console.log("Gebäude:", data);
@@ -41,9 +41,9 @@ const ShowBuildings = ({ onMarkersChange }) => {
       let years = [];
 
       buildings.forEach(building => {
-        // Prüfen ob lat und lon vorhanden und gültig sind
-        const lat = building.address?.lat;
-        const lon = building.address?.lon;
+        // Prüfen ob lat und lon vorhanden sind
+        const lat = building.address?.geoCoordinate?.latitude;
+        const lon = building.address?.geoCoordinate?.longitude;
         
         // Baujahr extrahieren
         const constructionYear = building.constructionYear;
