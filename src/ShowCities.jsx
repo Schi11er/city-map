@@ -9,10 +9,11 @@ const ShowCities = ({ onMarkersChange }) => {
     const fetchCityNames = async () => {
       try {
         const response = await fetch(
-          `http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings/cities`
+          `/api/buildings/cities`
+
         );
         const data = await response.json();
-        console.log("Städtenamen:", data);
+        // console.log("Städtenamen:", data);
         setCityNames(data);
       } catch (err) {
         console.error("Fehler beim Abrufen der Städte:", err);

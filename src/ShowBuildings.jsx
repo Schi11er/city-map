@@ -13,17 +13,16 @@ const ShowBuildings = ({ onMarkersChange }) => {
   useEffect(() => {
     const fetchBuildings = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings`
-        );
+        const apiUrl = `/api/buildings`;
+        const response = await fetch(apiUrl);
         const data = await response.json();
-        console.log("Gebäude:", data);
+        // console.log("Gebäude:", data);
         
-        // Debug: Zeige verfügbare Attribute des ersten Gebäudes
-        if (data.length > 0) {
-          console.log("Verfügbare Attribute im ersten Gebäude:", Object.keys(data[0]));
-          console.log("Erstes Gebäude komplett:", data[0]);
-        }
+        // // Debug: Zeige verfügbare Attribute des ersten Gebäudes
+        // if (data.length > 0) {
+        //   console.log("Verfügbare Attribute im ersten Gebäude:", Object.keys(data[0]));
+        //   console.log("Erstes Gebäude komplett:", data[0]);
+        // }
         
         setBuildings(data);
       } catch (err) {

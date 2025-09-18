@@ -12,15 +12,16 @@ const BuildingInfoModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const datacatApiUrl = window.REACT_APP_DATACAT_API_URL;
+
   // API-Aufruf für die Klasseneigenschaften
   const fetchClassProperties = async () => {
     setLoading(true);
     setError(null);
     try {
       // Ziel-URL für die DataCat API aus Umgebungsvariable
-      const baseUrl = process.env.REACT_APP_DATACAT_API_URL;
       const classUri = 'https://ibpdi.datacat.org/class/dfdb1a51-bd25-11eb-81e7-9735ef069f63';
-      const targetUrl = `${baseUrl}/api/Class/Properties/v1?ClassUri=${encodeURIComponent(classUri)}`;
+      const targetUrl = `${datacatApiUrl}/api/Class/Properties/v1?ClassUri=${encodeURIComponent(classUri)}`;
 
       // Versuch 1: Direkter Aufruf
       const response = await fetch(targetUrl, {
@@ -47,7 +48,7 @@ const BuildingInfoModal = ({
       // Versuch 2: Mit CORS-Proxy als Fallback
       try {
         const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const baseUrl = process.env.REACT_APP_DATACAT_API_URL;
+        const baseUrl = window.REACT_APP_DATACAT_API_URL;
         const classUri = 'https://ibpdi.datacat.org/class/dfdb1a51-bd25-11eb-81e7-9735ef069f63';
         const targetUrl = `${baseUrl}/api/Class/Properties/v1?ClassUri=${encodeURIComponent(classUri)}`;
 
@@ -74,7 +75,7 @@ const BuildingInfoModal = ({
   const fetchAccessRights = async () => {
     try {
       const response = await fetch(
-        `http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings/access-rights/class?classUri=https://ibpdi.datacat.org/class/Building`
+        `/api/buildings/access-rights/class?classUri=https://ibpdi.datacat.org/class/Building`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -220,7 +221,7 @@ const BuildingInfoModal = ({
               <details style={{ marginTop: '10px', fontSize: '11px' }}>
                 <summary style={{ cursor: 'pointer', color: '#374151' }}>Debugging-Info</summary>
                 <p style={{ margin: '5px 0', fontFamily: 'monospace' }}>
-                  API-URL: {process.env.REACT_APP_DATACAT_API_URL}/api/Class/Properties/v1<br/>
+                  API-URL: {window.REACT_APP_DATACAT_API_URL}/api/Class/Properties/v1<br/>
                   nicht erreichbar
                 </p>
               </details>

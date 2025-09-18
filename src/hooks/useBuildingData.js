@@ -6,7 +6,9 @@ export const useBuildingData = () => {
   // API-Aufruf um Attribute an Backend zu senden
   const sendAttributesToAPI = async (buildingId, attributes) => {
     try {
-      const response = await fetch(`http://localhost:${process.env.REACT_APP_BACKEND_API_PORT}/api/buildings/${buildingId}/attributes`, {
+      const response = await fetch(
+        `/api/buildings/${buildingId}/attributes`,
+        {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

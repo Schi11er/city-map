@@ -24,7 +24,7 @@ export const useApiDescriptions = () => {
     setError(null);
 
     try {
-    const baseUrl = process.env.REACT_APP_DATACAT_API_URL;
+    const baseUrl = window.REACT_APP_DATACAT_API_URL;
     console.log(baseUrl);
     const classUri = 'https://ibpdi.datacat.org/class/dfdb1a51-bd25-11eb-81e7-9735ef069f63';
     const targetUrl = `${baseUrl}/api/Class/Properties/v1?ClassUri=${encodeURIComponent(classUri)}`;
